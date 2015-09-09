@@ -316,7 +316,7 @@ int wfaTGConfig(int len, BYTE *caCmdBuf, int *respLen, BYTE *respBuf)
 
 	if(wfaTGWMMData.slotCnt == 0)
 	{
-		DPRINT_INFOL(WFA_OUT, "resetting stream table for %d\n",wfaTGWMMData.gStreams);
+		DPRINT_INFOL(WFA_OUT, "resetting stream table for %d\n",wfaTGWMMData.gStreams[0].id);
 		memset(wfaTGWMMData.gStreams, 0, WFA_MAX_TRAFFIC_STREAMS*sizeof(tgStream_t));
 	}
 
@@ -408,7 +408,7 @@ int wfaTGRecvStart(int len, BYTE *parms, int *respLen, BYTE *respBuf)
 			if(wfaTGWMMData.btSockfd >= 0)
 			{
 				wfaTGWMMData.gtgRecv = streamid;
-				DPRINT_INFOL(WFA_OUT, "wfaTGRecvStart wfaCreateUDPSock for MCAST btSockfd=%\n", wfaTGWMMData.btSockfd);
+				DPRINT_INFOL(WFA_OUT, "wfaTGRecvStart wfaCreateUDPSock for MCAST btSockfd=%i\n", wfaTGWMMData.btSockfd);
 			}
 			else
 			{
@@ -446,11 +446,11 @@ int wfaTGRecvStart(int len, BYTE *parms, int *respLen, BYTE *respBuf)
 			if ( ret == 0)
 			{
 				Sleep(100);
-				DPRINT_INFOL(WFA_OUT, "PROF_TRANSC usedThread %i streamId is %d, call release mutex ret = %d flag_mutex=%d errCd=%d \n", 
+				DPRINT_INFOL(WFA_OUT, "PROF_TRANSC usedThread %i streamId is %d, call release mutex ret = %d flag_mutex=%p errCd=%d \n", 
 					wfaTGWMMData.usedThread, wfaTGWMMData.wmm_thr[wfaTGWMMData.usedThread].thr_flag, ret, wfaTGWMMData.wmm_thr[wfaTGWMMData.usedThread].thr_flag_mutex, GetLastError());
 				ret = ReleaseMutex(wfaTGWMMData.wmm_thr[wfaTGWMMData.usedThread].thr_flag_mutex);
 			}
-			DPRINT_INFOL(WFA_OUT, "PROF_TRANSC usedThread %i  flag-streamId is %d, release mutex ret = %d flag_mutex=%d \n", 
+			DPRINT_INFOL(WFA_OUT, "PROF_TRANSC usedThread %i  flag-streamId is %d, release mutex ret = %d flag_mutex=%p \n", 
 				wfaTGWMMData.usedThread, wfaTGWMMData.wmm_thr[wfaTGWMMData.usedThread].thr_flag, ret, wfaTGWMMData.wmm_thr[wfaTGWMMData.usedThread].thr_flag_mutex);
 
 			wfaTGWMMData.usedThread++;
@@ -580,7 +580,7 @@ int wfaTGRecvStop(int len, BYTE *parms, int *respLen, BYTE *respBuf)
 			status = STATUS_INVALID;
 			wfaEncodeTLV(WFA_TRAFFIC_AGENT_RECV_STOP_RESP_TLV, 4, (BYTE *)&status, respBuf);
 			*respLen = WFA_TLV_HDR_LEN + 4;
-			DPRINT_INFOL(WFA_OUT,"wfaTGRecvStop:No stremId found id=%d\n", myStream);
+			DPRINT_INFOL(WFA_OUT,"wfaTGRecvStop:No streamId found id=%d\n", streamid);
 			return WFA_FAILURE;    
 		}
 
@@ -590,7 +590,7 @@ int wfaTGRecvStop(int len, BYTE *parms, int *respLen, BYTE *respBuf)
 			status = STATUS_INVALID;
 			wfaEncodeTLV(WFA_TRAFFIC_AGENT_RECV_STOP_RESP_TLV, 4, (BYTE *)&status, respBuf);
 			*respLen = WFA_TLV_HDR_LEN + 4;
-			DPRINT_INFOL(WFA_OUT,"wfaTGRecvStop:No stremId profile found id=%d\n", myStream);
+			DPRINT_INFOL(WFA_OUT,"wfaTGRecvStop:No streamId profile found id=%d\n", myStream->id);
 			return WFA_FAILURE;
 		}
 
@@ -599,7 +599,7 @@ int wfaTGRecvStop(int len, BYTE *parms, int *respLen, BYTE *respBuf)
 			status = STATUS_INVALID;
 			wfaEncodeTLV(WFA_TRAFFIC_AGENT_RECV_STOP_RESP_TLV, 4, (BYTE *)&status, respBuf);
 			*respLen = WFA_TLV_HDR_LEN + 4;
-			DPRINT_INFOL(WFA_OUT,"wfaTGRecvStop:stremId id=%d direction error\n", myStream);
+			DPRINT_INFOL(WFA_OUT,"wfaTGRecvStop:streamId id=%d direction error\n", myStream->id);
 			return WFA_FAILURE;
 		}
 
@@ -1680,7 +1680,7 @@ int wfaSendBitrateData(int mySockfd, int streamId, BYTE *pRespBuf, int *pRespLen
 	if ((mySockfd <= 0) || (streamId < 0) || ( pRespBuf == NULL) 
 		|| (pRespLen == NULL) || (*pRespLen < WFA_TLV_HDR_LEN+4))
 	{
-		DPRINT_INFOL(WFA_OUT, "wfaSendBitrateData pass-in parameter err mySockfd=%i streamId=%i pRespBuf=0x%x pRespLen=0x%x, *pRespLen=%i\n",
+		DPRINT_INFOL(WFA_OUT, "wfaSendBitrateData pass-in parameter err mySockfd=%i streamId=%i pRespBuf=0x%p pRespLen=0x%p, *pRespLen=%i\n",
 			mySockfd,streamId,pRespBuf,pRespLen,*pRespLen );
 		ret= WFA_FAILURE;
 		goto errcleanup;
@@ -1688,7 +1688,7 @@ int wfaSendBitrateData(int mySockfd, int streamId, BYTE *pRespBuf, int *pRespLen
 
 	if (theProf == NULL || myStream == NULL)
 	{
-		DPRINT_INFOL(WFA_OUT, "wfaSendBitrateData parameter err in NULL pt theProf=%l myStream=%l \n",
+		DPRINT_INFOL(WFA_OUT, "wfaSendBitrateData parameter err in NULL pt theProf=%p myStream=%p \n",
 			theProf, myStream);
 		ret= WFA_FAILURE;
 		goto errcleanup;
@@ -1709,7 +1709,7 @@ int wfaSendBitrateData(int mySockfd, int streamId, BYTE *pRespBuf, int *pRespLen
 	/* calculate bitrate asked */
 	if ((rate = theProf->pksize * theProf->rate * 8) > WFA_SEND_FIX_BITRATE_MAX)
 	{
-		DPRINT_INFOL(WFA_OUT, "wfaSendBitrateData over birate can do in the routine, req bitrate=%l \n",rate);
+		DPRINT_INFOL(WFA_OUT, "wfaSendBitrateData over birate can do in the routine, req bitrate=%i \n",rate);
 		ret= WFA_FAILURE;
 		goto errcleanup;
 	}

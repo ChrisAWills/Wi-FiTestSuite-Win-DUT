@@ -402,14 +402,14 @@ int wfaTrafficAgentSendResp(BYTE *cmdBuf)
 		strncat(wfaCAAgetData.gRespStr, ",txPayloadBytes,", 16);
 		for(i=0; i<numStreams; i++) 
 		{
-			sprintf(copyBuf, "%i ", statResp[i].cmdru.stats.txPayloadBytes);
+			sprintf(copyBuf, "%llu ", statResp[i].cmdru.stats.txPayloadBytes);
 			strncat(wfaCAAgetData.gRespStr, copyBuf, sizeof(copyBuf)-1);
 		}
 
 		strncat(wfaCAAgetData.gRespStr, ",rxPayloadBytes,", 16);
 		for(i=0; i<numStreams; i++) 
 		{
-			sprintf(copyBuf, "%i ", statResp[i].cmdru.stats.rxPayloadBytes);
+			sprintf(copyBuf, "%llu ", statResp[i].cmdru.stats.rxPayloadBytes);
 			strncat(wfaCAAgetData.gRespStr, copyBuf, sizeof(copyBuf)-1);
 		}
 		strncat(wfaCAAgetData.gRespStr, ",outOfSequenceFrames,", 20);

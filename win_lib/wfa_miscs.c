@@ -279,7 +279,7 @@ int wfa_estimate_timer_latency()
 	else
 		tp2.tv_sec = t1.tv_sec;
 
-	DPRINT_INFOL(WFA_OUT, "before sec %i, usec %i sleep %i after sec %i usec %i\n",t1.tv_sec,t1.tv_usec,t2.tv_sec,t2.tv_usec);
+	DPRINT_INFOL(WFA_OUT, "before sec %i, usec %i sleep %i after sec %i usec %i\n",t1.tv_sec,t1.tv_usec,sleep,t2.tv_sec,t2.tv_usec);
 
 	return latency = (t2.tv_sec - tp2.tv_sec) * 1000000 + (t2.tv_usec - tp2.tv_usec); 
 }

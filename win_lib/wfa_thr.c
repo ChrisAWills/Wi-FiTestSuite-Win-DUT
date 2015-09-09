@@ -764,7 +764,7 @@ void  wfaSentStatsResp(int sock, BYTE *buf)
 	tgStream_t *allStreams = wfaTGWMMData.gStreams;
 	dutCmdResponse_t *sendStatsResp = (dutCmdResponse_t *)buf, *first;
 	char buff[WFA_BUFF_4K];
-	DPRINT_INFOL(WFA_OUT, "wfaSentStatsResp: gstream is %d\n",wfaTGWMMData.gStreams);
+	DPRINT_INFOL(WFA_OUT, "wfaSentStatsResp: gstream is %p\n",wfaTGWMMData.gStreams);
 	if(sendStatsResp == NULL)
 		return;
 
@@ -778,7 +778,7 @@ void  wfaSentStatsResp(int sock, BYTE *buf)
 			sendStatsResp->streamId = allStreams->id;
 			memcpy(&sendStatsResp->cmdru.stats, &allStreams->stats, sizeof(tgStats_t));          
 
-			DPRINT_INFOL(WFA_OUT, "id=%i rxFrames=%i txFrames=%i rxPayLoadBytes=%i txPayloadBytes=%i lastPktSN=%i\n", allStreams->id,
+			DPRINT_INFOL(WFA_OUT, "id=%i rxFrames=%i txFrames=%i rxPayLoadBytes=%llu txPayloadBytes=%llu lastPktSN=%i\n", allStreams->id,
 				allStreams->stats.rxFrames,
 				allStreams->stats.txFrames,
 				allStreams->stats.rxPayloadBytes,
@@ -802,7 +802,7 @@ void  wfaSentStatsResp(int sock, BYTE *buf)
 		// reSend one more time
 		wfaCtrlSend(sock, (BYTE *)buff, pkLen);
 	}
-	DPRINT_INFOL(WFA_OUT, "wfaSentStatsResp exit: gstream is %d\n",wfaTGWMMData.gStreams);
+	DPRINT_INFOL(WFA_OUT, "wfaSentStatsResp exit: gstream is %p\n",wfaTGWMMData.gStreams);
 	return;
 }
 #endif

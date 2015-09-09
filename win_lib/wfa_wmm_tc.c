@@ -59,7 +59,7 @@ int wfaACClassToQos(int tgClass, int *pQos, int *pTosVal, int *pThreadPriority)
 
 	if ( pQos == NULL || pTosVal==NULL || pThreadPriority==NULL)
 	{
-		DPRINT_ERR(WFA_ERR, "wfaACClassToQos pass in err param or NULL pt tgClass=%d pQos=0x%x pTosVal=0x%x pThreadPriority=0x%x\n",tgClass, pQos,  pTosVal, pThreadPriority);
+		DPRINT_ERR(WFA_ERR, "wfaACClassToQos pass in err param or NULL pt tgClass=%d pQos=0x%p pTosVal=0x%p pThreadPriority=0x%p\n",tgClass, pQos,  pTosVal, pThreadPriority);
 		return WFA_FAILURE;
 	} 
 	switch(tgClass)
